@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Tabs, Button, Modal, Input, Radio, message } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 // import  users  from "../db/users.db";
@@ -60,13 +60,16 @@ const UserForm = () => {
       messageApi.info("Please Complete Form or You can Discard The Form");
     } else {
       setIsModalOpen(false);
-      navigate("/submit")
+      navigate("/submit");
     }
   };
   const handleCancel = () => {
     dispatch(setResetForm());
     setIsModalOpen(false);
   };
+  useEffect(() => {
+    dispatch(setResetForm());
+  }, [isModalOpen]);
   return (
     <div>
       {contextHolder}
@@ -87,12 +90,12 @@ const UserForm = () => {
               color: "white",
             },
           }}
-          okText="Save"
+          okText="Submit"
           cancelText="Discard Form"
         >
           <Tabs activeKey={activeTab} onChange={handleTabChange}>
             {/* Tab 1 */}
-            <TabPane tab="Personal Info" key="1">
+            <TabPane  key="1">
               <div className="flex flex-col gap-3">
                 <ul className="flex">
                   <li className="flex gap-3">
@@ -101,6 +104,7 @@ const UserForm = () => {
                       className="w-[50%] outline-none"
                       placeholder="First Name"
                       name="firstName"
+                      value={firstName}
                       onChange={(e) => {
                         dispatch(setFirstName(e.target.value));
                       }}
@@ -111,6 +115,7 @@ const UserForm = () => {
                     <Input
                       className="w-[50%] outline-none"
                       placeholder="Last Name"
+                      value={lastName}
                       name="lastName"
                       onChange={(e) => {
                         dispatch(setLastName(e.target.value));
@@ -140,7 +145,7 @@ const UserForm = () => {
               </div>
             </TabPane>
             {/* Tab 2 */}
-            <TabPane tab="Additional Info" key="2">
+            <TabPane  key="2">
               <div className="flex flex-col gap-3">
                 <ul className="flex flex-col gap-3">
                   {/* SSN Number */}
@@ -149,7 +154,8 @@ const UserForm = () => {
                     <Input
                       className="w-[50%] outline-none"
                       placeholder="SSN Number"
-                      name="firstName"
+                      name="ssnnumber"
+                      value={ssnNumber}
                       onChange={(e) => {
                         dispatch(setSSNNumber(e.target.value));
                       }}
@@ -162,6 +168,7 @@ const UserForm = () => {
                       onChange={(e) => {
                         dispatch(setDependencies(e.target.value));
                       }}
+                      value={dependencies}
                     >
                       <Radio value={true}>Yes</Radio>
                       <Radio value={false}>No</Radio>
@@ -173,7 +180,8 @@ const UserForm = () => {
                       <Input
                         className="w-[50%] outline-none"
                         placeholder="Dependent Name"
-                        name="lastName"
+                        name="depnedent name"
+                        value={nameOfDependent}
                         onChange={(e) => {
                           dispatch(setDependentName(e.target.value));
                         }}
@@ -187,21 +195,40 @@ const UserForm = () => {
                   <Button className="" onClick={handleBackButtonClick}>
                     Back
                   </Button>
-                  <Button className="" onClick={handleNextButtonClick}>
+                  <Button
+                    className=""
+                    onClick={() => {
+                      if (ssnNumber === "") {
+                        messageApi.info("Please enter SSN Number");
+                      } else if (dependencies === null) {
+                        messageApi.info("Please Your dependency type");
+                      } else if (
+                        dependencies === true &&
+                        nameOfDependent === ""
+                      ) {
+                        messageApi.info("Please enter dependent name");
+                      } else {
+                        handleNextButtonClick();
+                      }
+                    }}
+                  >
                     Next
                   </Button>
                 </div>
               </div>
             </TabPane>
             {/* Tab 3 */}
-            <TabPane tab="Dependent Info" key="3">
+            <TabPane  key="3">
               <div className="flex flex-col gap-3">
                 <ul className="flex flex-col gap-3">
                   {/* martial */}
                   <li className="flex gap-3">
                     <p className="text-lg font-semibold">Marital Status</p>
                     <Radio.Group
+                      value={maritalStatus}
                       onChange={(e) => {
+                        console.log(e.target.value);
+
                         dispatch(setMaritalStatus(e.target.value));
                       }}
                     >
@@ -209,7 +236,7 @@ const UserForm = () => {
                       <Radio value={false}>Single</Radio>
                     </Radio.Group>
                   </li>
-                  {maritalStatus ? (
+                  {maritalStatus == true ? (
                     <li className="flex gap-3">
                       <p className="text-lg font-semibold">Children</p>
                       <Radio.Group
@@ -232,30 +259,18 @@ const UserForm = () => {
                   <Button
                     className=""
                     onClick={() => {
-                      dispatch(setFullFormDone(true));
-                      // const data = {
-                      //   fullName: `${firstName} ${lastName}`,
-                      //   ssnNumber: ssnNumber,
-                      // };
-                      // if (dependencies === true) {
-                      //   data.dependencies = dependencies;
-                      //   data.nameOfDependent = nameOfDependent;
-                      // }
-                      // if (maritalStatus === true) {
-                      //   data.maritalStatus = maritalStatus;
-                      //   data.children = children;
-                      // }
-                      // if (dependencies === false) {
-                      //   data.dependencies = dependencies;
-                      //   data.nameOfDependent = nameOfDependent;
-                      // }
-                      // if (maritalStatus === false) {
-                      //   data.maritalStatus = maritalStatus;
-                      // }
-                      // users.push(data);
+                      if (maritalStatus === null) {
+                        messageApi.info("Please Select Your Marital Status");
+                      } else if (maritalStatus === true && children === null) {
+                        messageApi.info("Please Select do you have Childrens");
+                      } else {
+                        messageApi.info("Form is Filled Correctly");
+                        dispatch(setFullFormDone(true));
+                        messageApi.info("Now you can press the Submit Button");
+                      }
                     }}
                   >
-                    Complete
+                    Click here after select options
                   </Button>
                 </div>
               </div>

@@ -5,7 +5,7 @@ const initialState = {
   ssnNumber: "",
   dependencies: null,
   nameOfDependent: "",
-  martialStatus: null,
+  maritalStatus: null,
   children: null,
   fullFormDone:null
 };
@@ -23,7 +23,7 @@ const userReducer = (state = initialState, action) => {
     case FormTypes.SET_DEPENDENT_NAME:
       return { ...state, nameOfDependent: action.payload };
     case FormTypes.SET_MARITAL_STATUS:
-      return { ...state, martialStatus: action.payload };
+      return { ...state, maritalStatus: action.payload };
     case FormTypes.SET_CHILDREN:
       return { ...state, children: action.payload };
     case FormTypes.SET_FULL_FORM_DONE:
